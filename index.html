@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Lit + TS</title>
+    <link rel="stylesheet" href="./src/index.css" />
+    
+    <script type="module" src="/src/MyElement.ts"></script>
+    
+
+     </head>
+  <body>
+   <my-element id="sgnbox">
+    <input type="text" id="inputbox" placeholder="search anything" autocomplete="off" slot="input" value="" minchar=2 />
+    <div class="container" slot="list-item">
+    </div>
+
+    <div slot="listcontainer">
+      
+    </div>
+   </my-element>
+   <script>
+    let el = document.getElementById('sgnbox')
+    el.listKey = 'suggestion';
+    el.list = [
+      {id:1, suggestion:"smart-phone", image:""},
+      {
+        id:2,
+        suggestion:"smart-home",
+        image:""
+      },
+      {
+        id:3,
+        suggestion:"Smartphone",
+      },
+      {
+        suggestion:"Laptop"
+      },
+      {
+        suggestion:"Tablet"
+      },
+      {
+        suggestion:"Smartwatch"
+      },
+      {
+        suggestion:"Headphones"
+      },{
+        suggestion:"Smart TV"
+      },{
+        suggestion:"Router"
+      },{
+        suggestion:"Fitness Tracker"
+      },
+      {
+        suggestion:"Television"
+      },
+      {
+        suggestion:"Tractor"
+      },
+      {
+        suggestion:"Traders"
+      },
+      {
+        suggestion:"Tlex"
+      },{
+        suggestion:"Travis head"
+      },
+      {
+        suggestion:"Terrioritt"
+      },
+      {
+        suggestion:"Telescope"
+      },
+      {
+        suggestion:"Tree"
+      } 
+      ,{
+        suggestion:"Telephoto"
+      },
+      {
+        suggestion:"Target"
+      },
+      "Tilak varma",
+      
+     
+    ]
+   </script>
+  </body>
+</html>
