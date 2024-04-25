@@ -11,41 +11,56 @@ export class MyElement extends LitElement
     super();
 
     this.input.addEventListener("keydown",this.handlearrow.bind(this));
-    
+   
 
   }
+  
+
 
     static styles = css`
     :host {
       display: grid;
       justify-content:center;
       align-items:center; 
-      margin:50px; 
-      
-      
+      margin:50px;  
     }
-    .list-items{
-      display:grid;
-      
-    }
-    li{
-      list-style:none;
-      margin-top:10px;
-      padding:5px;
-      margin-left:-30px;
 
+    li{
+      position:relative;
+      list-style:none;
+      padding:8px;
+      margin-left:-40px;
+      box-shadow:0.5px 0 5px gray;
     }
+    
+
     ::slotted(input){
-      height:40px;
+     height:40px;
      width:300px;
      padding-left:30px;
      outline:none;
-     border:2px solid gray;
+     border:none;
+     box-shadow:0px -1.5px 3px rgba(50, 50, 50, 0.75);
      border-radius:10px;
     }
+
+   ::slotted(div)
+   {
+    margin-top:-5px;
+    
+    
+   }
+   :host(.container)
+   {
+    background:yellow;
+   }
     
    
   `;
+    
+   @property()
+   countheight:number=0;
+
    @property()
    load_id:any=document.getElementById("load_id");
    
@@ -104,16 +119,15 @@ export class MyElement extends LitElement
             if(i<this.loadmore_index+5){
               
               return html `
-            <slot name="slotcontainer">
-              <li @click=${this.fillInput} >${ ( typeof items === "object" ) ?  items.suggestion : items}</li>
-            </slot>
+              <li @click=${this.fillInput} class="itemlist">${ ( typeof items === "object" ) ?  items.suggestion : items}</li>
+            
              `
             }
              else if(i === this.loadmore_index+5 ) {
             
               return html `
               
-              <li @click=${this.loadmore} id="load_id">Load more... </li>
+              <li  @click=${this.loadmore} id="load_id">Load more... </li>
              
             ` 
             }
@@ -135,7 +149,7 @@ export class MyElement extends LitElement
       {
         if(this.currentindex===0)
           {
-            this.currentindex=(this.loadmore_index+ this.result.length % 5);
+            this.currentindex=(this.loadmore_index+ this.result.length % 5 );
           }
           else{
             this.currentindex-=1
@@ -175,6 +189,7 @@ export class MyElement extends LitElement
     {
       this.loadmore_index+=5;
       this.currentindex=this.loadmore_index;
+      this.countheight++;
       
     }
 
@@ -195,12 +210,12 @@ export class MyElement extends LitElement
             {
             if(typeof key ==="object")
             { 
-            if(((key[this.listKey]).charAt(i) != this.input1.charAt(i)))
+            if(((key[this.listKey]).charAt(i).toLowerCase() != this.input1.charAt(i).toLowerCase()))
             {
               this.state=false;
             }
             }
-            else if(key.charAt(i) != this.input1.charAt(i)){
+            else if(key.charAt(i).toLowerCase() != this.input1.charAt(i).toLowerCase()){
               this.state=false;
             }
 
@@ -241,8 +256,6 @@ export class MyElement extends LitElement
         
         this.currentindex=this.currentindex-5-1;
         
-        
-        
       }
    
       
@@ -263,5 +276,3 @@ export class MyElement extends LitElement
     }
 
 }
-
-//addEventListener("keydown",this.handlearrow.bind(this));

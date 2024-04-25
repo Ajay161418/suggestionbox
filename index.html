@@ -12,14 +12,12 @@
 
      </head>
   <body>
-   <my-element id="sgnbox">
-    <input type="text" id="inputbox" placeholder="search anything" autocomplete="off" slot="input" value="" minchar=2 />
+   <my-element id="sgnbox" minchar=1>
+    <input type="text" id="inputbox" placeholder="search anything" autocomplete="off" slot="input" value=""  />
     <div class="container" slot="list-item">
     </div>
 
-    <div slot="listcontainer">
-      
-    </div>
+   
    </my-element>
    <script>
     let el = document.getElementById('sgnbox')
