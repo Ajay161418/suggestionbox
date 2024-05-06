@@ -61,23 +61,24 @@ export class SuggestionBox extends LitElement {
     @property()
     highlight:string;
 
-    private input_el:HTMLElement | null;
+    @property()
+    input_el:HTMLElement | null;
 
     private input_temp:HTMLElement | null;
 
     render() {
       return html `
       <div style = "position:relative">
-      <div part = "sgn-input" class = "inputbox" >
-          <slot name = "sgn-input"  @keydown = ${this.unslottedInputEvent}><input  /></slot>
+      <div part = "sgn-input" class = "inputbox" @keydown=${this.keyDownInput} >
+          <slot name = "sgn-input"  @input = ${this.unslottedInputEvent} ><input  /></slot>
       </div>
       <template></template>
          <slot name = "sgn-item-template" style = "display:none"></slot>
       <div part = "sgn-container">
           <div style = "display:${this.show_empty?'block':'none'}" part = "sgn-empty"><slot name = "sgn-empty"></slot></div>
-          <div  style = "display:${!this.show_empty?'block':'none'}">
+          <div  style = "display:${!this.show_empty?'block':'none'}" >
               <div part = "active">
-              <slot  name = "__private-item" @click = ${this.saveInput}></slot>
+              <slot  name = "__private-item" @click = ${this.saveInput} @mouseover=${this.mouseOverEvent}></slot>
               </div>
               <slot name = "__loadmore-item" @click = ${this.loadmoreentry}></slot>
           </div>
@@ -92,28 +93,23 @@ export class SuggestionBox extends LitElement {
       }
       this.input_el.value =this.result[this.private_items.indexOf(el)].name;
     }
-
-    unslottedInputEvent(e) {
-        if (!this.input_el) {
-            this.input_el = e.target;
-      }
+    mouseOverEvent(e) { 
+      let curr_index = this.result.findIndex(user => user.name === e.target.innerHTML)
+      this.index=curr_index;
+      this.setInputValue();
+    }
+    keyDownInput(e){ 
       const resultLength = this.result.length;
       switch (e.key) {
         case "ArrowUp":
-          if (this.index === -1) {
-            this.index = resultLength; 
-          } else if (this.index === resultLength) {
-            this.index = resultLength - 1; 
-          } else {
-            this.index = (this.index - 1 + resultLength) % resultLength; 
-          }
+          this.index = (this.index === -1 || (this.has_more && this.index === 0)) ?
+                       resultLength + (this.has_more ? 1 : 0) :
+                       (this.index - 1 + resultLength + (this.has_more ? 1 : 0)) % (resultLength + (this.has_more ? 1 : 0));
           break;
         case "ArrowDown":
-          if (this.index === -1 || (this.has_more && this.index === resultLength)) {
-            this.index = 0; 
-          } else {
-            this.index = (this.index + 1) % (resultLength + (this.has_more ? 1 : 0)); 
-          }
+          this.index = (this.index === -1 || (this.has_more && this.index === resultLength)) ?
+                       0 :
+                       (this.index + 1) % (resultLength + (this.has_more ? 1 : 0));
           break;
         case "Enter":
           if (this.index === resultLength) {
@@ -121,34 +117,39 @@ export class SuggestionBox extends LitElement {
           }
           break;
       }
-      this.setInputValue(); 
+      this.setInputValue();
+    }
+
+    unslottedInputEvent(e) {
+      this.input_el= e.target;
+      this.keyDownInput;
+      return;
     }
     setInputValue() {
-        const resultLength = this.result.length;
-        for (let el of this.private_items) {
-            el.classList.remove('active');
-        }
-        for (let el of this.loadmore_items) {
-            el.classList.remove('active');
-        }
-      if (this.index >= 0 && this.index < resultLength) {
-            const selectedItem = this.private_items[this.index];
-            selectedItem.classList.add('active'); 
-            this.input_el.value = this.result[this.index].name;
-      } else if (this.index === resultLength) {
-            const loadMoreItem = this.loadmore_items[0];
-            loadMoreItem.classList.add('active'); 
-            this.input_el.value = "";
-      } else {
-        this.input_el.value = "";
+      const resultLength = this.result.length;
+      const selectedValue = this.result[this.index]?.name || ""; 
+      for (let el of this.private_items) {
+          el.classList.remove('active');
       }
-    }
+      for (let el of this.loadmore_items) {
+          el.classList.remove('active');
+      }
+      if (this.index >= 0 && this.index < resultLength) {
+          const selectedItem = this.private_items[this.index];
+          selectedItem.classList.add('active'); 
+      } else if (this.index === resultLength) {
+          const loadMoreItem = this.loadmore_items[0];
+          loadMoreItem.classList.add('active'); 
+      }
+      if(selectedValue){
+        this.input_el.value = selectedValue;
+      }
+  }
 
     setSuggestion(suggestions:Object[] , highlight?:string , has_more?:boolean) {
         this.result = [...suggestions];
         this.index = this.index;
         this.input_temp = this.input_el.value;
-        console.log(this.input_temp)
         this.input_temp? this.show_empty = false : this.show_empty = true;
         this.has_more = has_more;
         if(this._private_slot_el) {
@@ -179,7 +180,6 @@ export class SuggestionBox extends LitElement {
     }
 
     loadmoreentry() {
-        console.log("loading more entry")
         const loadmore = new CustomEvent("loadmore",{
         bubbles:true,
       });
@@ -189,10 +189,8 @@ export class SuggestionBox extends LitElement {
       this.result = [...this.result];
       this.result.push(suggestions);
       this.result = this.result.flat(Infinity)
-      console.log(this.result.length)
       this.size = this.size + suggestions.length;
       this.has_more = has_more;
-      console.log("Appendsuggestion - ", this.has_more);
       if (!this.has_more && this.loadmore_items.length) {
             this.loadmore_items[0].remove();
       }
