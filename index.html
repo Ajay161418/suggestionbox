@@ -1,89 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Lit + TS</title>
-    <link rel="stylesheet" href="./src/index.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggestion Box Demo</title>
+    <script type="module" src="./src/SuggestionBox.ts"></script>
+</head>
+<style>
+  .container{
+    display: flex;
     
-    <script type="module" src="/src/MyElement.ts"></script>
-    
+  }
+  .container p{
+    margin-left: 20px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  aalam-sgn-box .inputbox {
+      background-color: aqua;
+  }
+  .active{
+    background-color: yellow;
+    color: aliceblue;
+  }
 
-     </head>
-  <body>
-   <my-element id="sgnbox" minchar=1>
-    <input type="text" id="inputbox" placeholder="search anything" autocomplete="off" slot="input" value=""  />
-    <div class="container" slot="list-item">
-    </div>
+  
+  
+</style>
 
-   
-   </my-element>
-   <script>
-    let el = document.getElementById('sgnbox')
-    el.listKey = 'suggestion';
-    el.list = [
-      {id:1, suggestion:"smart-phone", image:""},
-      {
-        id:2,
-        suggestion:"smart-home",
-        image:""
-      },
-      {
-        id:3,
-        suggestion:"Smartphone",
-      },
-      {
-        suggestion:"Laptop"
-      },
-      {
-        suggestion:"Tablet"
-      },
-      {
-        suggestion:"Smartwatch"
-      },
-      {
-        suggestion:"Headphones"
-      },{
-        suggestion:"Smart TV"
-      },{
-        suggestion:"Router"
-      },{
-        suggestion:"Fitness Tracker"
-      },
-      {
-        suggestion:"Television"
-      },
-      {
-        suggestion:"Tractor"
-      },
-      {
-        suggestion:"Traders"
-      },
-      {
-        suggestion:"Tlex"
-      },{
-        suggestion:"Travis head"
-      },
-      {
-        suggestion:"Terrioritt"
-      },
-      {
-        suggestion:"Telescope"
-      },
-      {
-        suggestion:"Tree"
-      } 
-      ,{
-        suggestion:"Telephoto"
-      },
-      {
-        suggestion:"Target"
-      },
-      "Tilak varma",
-      
+<body>
+    <aalam-sgn-box id="sgnbox" highlight="matched">
+       <div class="div" slot="sgn-input">
+          <input   type="text" placeholder="search..."  />
+       </div>
+       <div  slot="sgn-item-template">
+        <div class="container " >
+        <p  name="name">{name}</p>
+        <p>{description}</p>
+      </div>
+       </div>
+       <div class="sgn-empty" slot="sgn-empty">
+        This is empty...
+       </div>
+    </aalam-sgn-box>
+
+
+    <script>
+
+      let el = document.getElementById("sgnbox")
+      el.addEventListener("loadmore",()=>{
+        loadmoreEntries(el);
+      })
      
-    ]
-   </script>
-  </body>
+      let ele =document.getElementById("sgnbox");
+      ele.addEventListener("input", () =>{
+        handleInput(ele);
+      })
+
+      async function handleInput(el) {
+        this.show_empty=false;
+        let res=[{name:"Ajay" , description:"21"}, {name:"vijay", description:"22"}];
+        el.setSuggestion(res,true,true);
+      }
+        
+      async function loadmoreEntries(el) {
+        
+        let res = [{name:"No one replce", description:"23"},{name:"harsha", description:"22"}
+        
+      ];
+        el.appendSuggestion(res,false,true);
+      }
+    </script>
+</body>
 </html>
